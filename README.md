@@ -22,6 +22,23 @@ A análise considera os **últimos 4 anos de dados mensais** (via Yahoo Finance)
   - Preço normalizado (t0 = 1,0);  
   - Retorno acumulado mensal.  
 
+## 📊 Atualização: Cálculo do CAPM
+
+O código foi atualizado para incluir a análise do **Capital Asset Pricing Model (CAPM)** para os ativos da carteira:
+
+- **Betas** de cada ativo em relação ao IBOVESPA;
+- **Retorno esperado** pelo CAPM, considerando:
+  - Taxa livre de risco (Rf = 5% a.a., título público de longo prazo);
+  - Retorno médio do mercado (IBOV);
+- Comparação entre risco sistemático e retorno projetado.
+
+### 📈 Interpretação
+- Ativos com **beta < 1** → mais estáveis que o mercado, retorno esperado menor.
+- Ativos com **beta = 1** → acompanham o mercado.
+- Ativos com **beta > 1** → mais voláteis, exigem retorno maior para compensar o risco.
+
+Esse cálculo permite avaliar se os retornos históricos dos ativos estão de acordo com o risco assumido, segundo o modelo CAPM.
+
 ## 🛠️ Tecnologias
 - Python 3  
 - [yfinance](https://pypi.org/project/yfinance/) (importação dos dados)  
@@ -37,5 +54,5 @@ A análise considera os **últimos 4 anos de dados mensais** (via Yahoo Finance)
 - Volatilidade anual: **17,83%**  
 
 ## 📌 Observação
-Este projeto foi desenvolvido como atividade acadêmica na disciplina de **Fundamentos de Contabilidade e Gestão Financeira**.  
+Este projeto está sendo desenvolvido na disciplina de **Fundamentos de Contabilidade e Gestão Financeira**.  
 As fórmulas foram aplicadas conforme material de aula, **sem bibliotecas externas para cálculos estatísticos**.  
