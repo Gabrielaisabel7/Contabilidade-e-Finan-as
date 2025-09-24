@@ -1,8 +1,10 @@
 # Risco & Retorno de uma Carteira (últimos 4 anos - análise mensal);
 # Simular carteira com 100k, 3 ações (BBAS3.SA (Banco do Brasil), PETR4.SA (Petrobras) e VALE3.SA (Vale));
+# Calcular risco, retorno e CAPM dos ativos (betas, retorno esperado pelo modelo em relação ao IBOV e taxa livre de risco);
+
 # Requisitos: pip install yfinance matplotlib;
 # Autora: Gabriela Isabel Cirene da Silva.
-
+import pandas as pd
 import math
 from datetime import datetime
 import yfinance as yf
@@ -211,7 +213,39 @@ print("Investido por ativo (R$) e quantidade de ações:")
 for t in TICKERS:
     print(f" {t}: Qtd={qtd_shares[t]}, Investido=R$ {investido_por_ativo[t]:,.2f}")
 print(f"Caixa restante (não investido): R$ {caixa_restante:,.2f}")
+# -------- CAPM --------
+print("\n=== CAPM ===")
 
+# Baixa IBOV para o mesmo período
+ibov = yf.download("^BVSP", start=START, end=END, auto_adjust=True, progress=False)['Close']
+
+# Garante que seja Series
+if isinstance(ibov, pd.DataFrame):
+    ibov = ibov.iloc[:,0]
+
+ibov_mensal = ibov.resample("ME").last()
+ret_ibov = ibov_mensal.pct_change().dropna().tolist()
+
+# Retorno médio anual do mercado
+mu_m_ibov = media(ret_ibov)
+mu_a_ibov = mu_m_ibov * MESES_ANO
+
+# Variância do mercado (mensal -> anualizada)
+var_ibov_m = desvio_padrao_amostral(ret_ibov)**2
+var_ibov_a = var_ibov_m * MESES_ANO
+
+# Taxa livre de risco (Tesouro longo ~5% a.a.)
+Rf = 0.05
+
+for t in TICKERS:
+    Ri = retornos_mensais[t]
+    Rm = ret_ibov[:len(Ri)]
+    beta = covariancia_amostral(Ri, Rm) / var_ibov_m
+    retorno_capm = Rf + beta * (mu_a_ibov - Rf)
+    print(f"{t}: Beta={beta:.3f} | Retorno esperado CAPM={retorno_capm*100:.2f}%")
+
+print(f"\nMercado (IBOV): Retorno médio anual={mu_a_ibov*100:.2f}%, Variância anual={var_ibov_a:.4f}")
+print(f"Taxa livre de risco (Rf): {Rf*100:.2f}%")
 # -------- GRÁFICOS SIMPLES (preço normalizado e retorno acumulado) --------
 plt.figure(figsize=(10,5))
 for t in TICKERS:
